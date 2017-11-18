@@ -106,6 +106,7 @@ namespace KULLABERG
 
         public static string GetFinalMsg(string[] sa)
         {
+            //Console.WriteLine("curr: " + UDPConnection.gameid);
             string s = "";
 
             Vector[] vs = AIi(STV(sa[3], sa[4]), STV(sa[5], sa[6]), STV(sa[7], sa[8]), STV(sa[1], sa[2]), 4);
@@ -137,11 +138,42 @@ namespace KULLABERG
 
             server.Start();   // and start the server
 
+            HttpListenerContext context = server.GetContext();
+            HttpListenerResponse response = context.Response;
+            //Console.WriteLine(response.Headers);
+            string s = "";
+            foreach (var c in context.Request.Url.Query)
+                s += c;
+            //Console.WriteLine(s);
+            string[] s1 = s.Split('=');
+            string match = s1[1].Split('&')[0];
+            string player = s1[2];
+            if (player == "1")
+                kapux = 1000;
+            else
+                kapux = 0;
+
+            UDPConnection.gameid = match;
+            UDPConnection.ConnectionThread.Start();
+
             while (true)
             {
-                HttpListenerContext context = server.GetContext();
-                HttpListenerResponse response = context.Response;
-
+                context = server.GetContext();
+                response = context.Response;
+                //Console.WriteLine(response.Headers);
+                s = "";
+                foreach (var c in context.Request.Url.Query)
+                    s += c;
+                //Console.WriteLine(s);
+                s1 = s.Split('=');
+                match = s1[1].Split('&')[0];
+                player = s1[2];
+                if (player == "1")
+                    kapux = 1000;
+                else
+                    kapux = 0;
+                //Console.WriteLine(match + " " + player);
+                UDPConnection.gameid = match;
                 sendmsg(context, response, getitpls);
             }
         }

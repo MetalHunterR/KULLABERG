@@ -10,9 +10,7 @@ namespace KULLABERG
     {
         static void Main(string[] args)
         {
-            UDPConnection Connection = new UDPConnection();
-            Connection.StartListening();
-            Console.Read();
+            AI.thread.Start();
         }
     }
 }

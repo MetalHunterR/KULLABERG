@@ -2,14 +2,18 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace KULLABERG
 {
     class UDPConnection
     {
-        private const int ListenPort = 12010;
+        public static Thread ConnectionThread = new Thread(new ThreadStart(StartListening));
 
-        public void StartListening()
+        private const int ListenPort = 12010;
+        public static string gameid = "77";
+
+        private static void StartListening()
         {
             bool done = false;
             UdpClient Listener = new UdpClient(ListenPort);
@@ -20,9 +24,8 @@ namespace KULLABERG
 
             try
             {
-                Console.WriteLine("Waiting for broadcast");
+                Console.WriteLine("Looking for broadcast...");
 
-                AI.thread.Start();
                 while (!done)
                 {
                     ReceivedByteAray = Listener.Receive(ref EndPoint);
@@ -32,7 +35,7 @@ namespace KULLABERG
                     foreach (string g in games)
                     {
                         string[] tmp = g.Split('|');
-                        if (tmp[0] == "69")
+                        if (tmp[0] == gameid)
                         {
                             AI.getitpls = tmp;
                             break;
