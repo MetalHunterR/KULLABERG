@@ -10,7 +10,7 @@ namespace KULLABERG
     {
         static void Main(string[] args)
         {
-            AI.thread.Start();
+            AI.AIThread.Start();
         }
     }
 }

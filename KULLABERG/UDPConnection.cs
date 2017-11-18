@@ -37,7 +37,7 @@ namespace KULLABERG
                         string[] tmp = g.Split('|');
                         if (tmp[0] == gameid)
                         {
-                            AI.getitpls = tmp;
+                            AI.GameData = tmp;
                             break;
                         }
                     }

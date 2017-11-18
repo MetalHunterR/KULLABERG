@@ -12,30 +12,41 @@ namespace KULLABERG
 {
     class AI
     {
-        public static Thread thread = new Thread(new ThreadStart(Threadd));
+        public static Thread AIThread = new Thread(new ThreadStart(MainThread));
 
-        public static int kapux = 1000;
-        public static string[] getitpls = new string[15];
+        private static Vector2 Goal = new Vector2(1000, 350);
+        public static string[] GameData = new string[15];
 
         static Vector2 p1;
         static Vector2 p2;
         static Vector2 p3;
         static Vector2 ball;
+        private static string player = "1";
 
-        public static Vector2 CalcDirAToB(Vector2 a, Vector2 b)
+        private static float CalcDistForAtoB(Vector2 From, Vector2 To)
         {
-            Vector2 ret = a - b;
-            double max = Math.Max(ret.X, ret.Y);
-            return Vector2.Divide(a, b);
+            return Vector2.Distance(From, To);
         }
 
-        public static Vector2 CalcDistanceToGoal()
+        private static float CalcDistanceToMyGoal(Vector2 PlayerPosition)
         {
-            Vector2 GoalPoint = new Vector2(kapux, 350);
+            if (player == "1")
+            {
+                Goal.X = 0;
+                return Vector2.Distance(PlayerPosition, Goal);
+            }
+            return Vector2.Distance(PlayerPosition, Goal);
+        }
 
-            //double dist = p1 % GoalPoint;
-            //Console.WriteLine(dist);
-            return new Vector2(0, 0);
+        private static float GetNearestPlayerToBall(Vector2 P1, Vector2 P2, Vector2 P3, Vector2 Ball)
+        {
+            float[] Distances = new float[3];
+
+            Distances[0] = Vector2.Distance(P1, Ball);
+            Distances[1] = Vector2.Distance(P2, Ball);
+            Distances[2] = Vector2.Distance(P3, Ball);
+
+            return Distances.Min();
         }
 
         public static int RandNeg()
@@ -114,7 +125,7 @@ namespace KULLABERG
             return s;
         }
 
-        public static void sendmsg(HttpListenerContext context, HttpListenerResponse response, string[] sa)
+        public static void SendMsg(HttpListenerContext context, HttpListenerResponse response, string[] sa)
         {
             string msg = GetFinalMsg(sa);
 
@@ -127,7 +138,7 @@ namespace KULLABERG
             context.Response.Close();
         }
 
-        static void Threadd()
+        static void MainThread()
         {
             HttpListener server = new HttpListener();  // this is the http server
             server.Prefixes.Add("http://192.168.1.86:11001/no_way_out/");  //we set a listening address here (localhost)
@@ -170,7 +181,7 @@ namespace KULLABERG
                     kapux = 0;
                 //Console.WriteLine(match + " " + player);
                 UDPConnection.gameid = match;
-                sendmsg(context, response, getitpls);
+                SendMsg(context, response, GameData);
             }
         }
     }
