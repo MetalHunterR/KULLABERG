@@ -66,6 +66,7 @@ namespace KULLABERG
                 ret[i] = new Vector2(0, 0);
             }
 
+            /*
             if (Math.Max(Math.Abs(kapux - p1.X), Math.Abs(kapux - p2.X)) == Math.Abs(kapux - p1.X))
             {
                 Vector2 temp = new Vector2(ball.X - 15, ball.Y);
@@ -85,7 +86,7 @@ namespace KULLABERG
             }
             ret[2] = CalcDirAToB(p3, Vector2.Multiply(ball, (rand.Next(2, 10) * 10 * RandNeg())) * maxspeed);
             CalcDistanceToGoal();
-
+            */
             return ret;
         }
 
@@ -115,7 +116,6 @@ namespace KULLABERG
             p3 = STV(sa[7], sa[8]);
             ball = STV(sa[1], sa[2]);
 
-            CalcDistanceToGoal();
             Vector2[] vs = AI2(STV(sa[3], sa[4]), STV(sa[5], sa[6]), STV(sa[7], sa[8]), STV(sa[1], sa[2]), 4);
 
             for (int i = 0; i < 3; ++i)
@@ -155,10 +155,6 @@ namespace KULLABERG
             string[] s1 = s.Split('=');
             string match = s1[1].Split('&')[0];
             string player = s1[2];
-            if (player == "1")
-                kapux = 1000;
-            else
-                kapux = 0;
 
             UDPConnection.gameid = match;
             UDPConnection.ConnectionThread.Start();
@@ -175,10 +171,6 @@ namespace KULLABERG
                 s1 = s.Split('=');
                 match = s1[1].Split('&')[0];
                 player = s1[2];
-                if (player == "1")
-                    kapux = 1000;
-                else
-                    kapux = 0;
                 //Console.WriteLine(match + " " + player);
                 UDPConnection.gameid = match;
                 SendMsg(context, response, GameData);
