@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using System.Threading;
@@ -162,6 +159,30 @@ namespace KULLABERG
             }
         }
 
+        private static Vector2 AI_Def(Vector2 P)
+        {
+            int index = 1;
+            float min = CalcDistForAtoB(ball, e1);
+            float newmin = CalcDistForAtoB(ball, e2);
+            if (newmin < min) { min = newmin; index = 2; }
+            newmin = CalcDistForAtoB(ball, e3);
+            if (newmin < min) { min = newmin; index = 3; }
+
+            switch (index)
+            {
+                case 1: return Vector2.Subtract(e1, P);
+
+                case 2:
+                    return Vector2.Subtract(e1, P);
+
+                case 3:
+                    return Vector2.Subtract(e1, P);
+
+                default: return new Vector2(0, 0);
+
+            }
+        }
+
         private static Vector2 ReScale(Vector2 v, float maxspeed)
         {
             float vMagnitude = (float)Math.Sqrt(v.X * v.X + v.Y * v.Y);
@@ -170,7 +191,7 @@ namespace KULLABERG
             return v;
         }
 
-        private static Vector2[] AIBrain(/*Vector2 p1, Vector2 p2, Vector2 p3, Vector2 ball, */float maxspeed)
+        private static Vector2[] AIBrain(float maxspeed)
         {
             Console.WriteLine();
             Random rand = new Random();
@@ -192,11 +213,10 @@ namespace KULLABERG
             {
                 if (minballdist == p1bdist)
                 {
-                    if (/*ret[0] == new Vector2(0, 0) && */Math.Abs(CalcDistForAtoB(p1, GetEnemyGoal())) > Math.Abs(CalcDistForAtoB(ball, GetEnemyGoal())))
-                    {
+                    if (CalcDistForAtoB(p1, GetEnemyGoal()) < CalcDistForAtoB(ball, GetEnemyGoal()))
+                        {
                         ret[0] = AI_Atk(p1);
                         gut++;
-                        Console.WriteLine("p1 - Attacker");
                         break;
                     }
                     else
@@ -206,11 +226,10 @@ namespace KULLABERG
                 }
                 if (minballdist == p2bdist)
                 {
-                    if (/*ret[1] == new Vector2(0, 0) && */Math.Abs(CalcDistForAtoB(p2, GetEnemyGoal())) > Math.Abs(CalcDistForAtoB(ball, GetEnemyGoal())))
-                    {
+                    if (CalcDistForAtoB(p2, GetEnemyGoal()) < CalcDistForAtoB(ball, GetEnemyGoal()))
+                        {
                         ret[1] = AI_Atk(p2);
                         gut++;
-                        Console.WriteLine("p2 - Attacker");
                         break;
                     }
                     else
@@ -220,27 +239,25 @@ namespace KULLABERG
                 }
                 if (minballdist == p3bdist)
                 {
-                    if (/*ret[2] == new Vector2(0, 0) && */Math.Abs(CalcDistForAtoB(p3, GetEnemyGoal())) > Math.Abs(CalcDistForAtoB(ball, GetEnemyGoal())))
+                    if (CalcDistForAtoB(p3, GetEnemyGoal()) < CalcDistForAtoB(ball, GetEnemyGoal()))
                     {
                         ret[2] = AI_Atk(p3);
                         gut++;
-                        Console.WriteLine("p3 - Attacker");
                         break;
                     }
                 }
             }
             while (false);
-            #endregion
-            /*
+            #endregion          
             #region DEF
             minballdist = Math.Min(p1bdist, Math.Min(p2bdist, p3bdist));
             do
             {
                 if (minballdist == p1bdist)
                 {
-                    if (ret[0] == new Vector2(0, 0) && CalcDistanceToMyGoal(p1) > CalcDistanceToMyGoal(ball))
+                    if (CalcDistanceToMyGoal(p1) > CalcDistanceToMyGoal(ball))
                     {
-                        //ret[0] = AI_Def(p1);
+                        ret[0] = AI_Def(p1);
                         gut++;
                         break;
                     }
@@ -251,9 +268,9 @@ namespace KULLABERG
                 }
                 if (minballdist == p2bdist)
                 {
-                    if (ret[1] == new Vector2(0, 0) && CalcDistanceToMyGoal(p2) > CalcDistanceToMyGoal(ball))
+                    if (CalcDistanceToMyGoal(p2) > CalcDistanceToMyGoal(ball))
                     {
-                        //ret[1] = AI_Def(p2);
+                        ret[1] = AI_Def(p2);
                         gut++;
                         break;
                     }
@@ -264,17 +281,16 @@ namespace KULLABERG
                 }
                 if (minballdist == p3bdist)
                 {
-                    if (ret[2] == new Vector2(0, 0) && CalcDistanceToMyGoal(p3) > CalcDistanceToMyGoal(ball))
+                    if (CalcDistanceToMyGoal(p3) > CalcDistanceToMyGoal(ball))
                     {
-                        //ret[2] = AI_Def(p3);
+                        ret[2] = AI_Def(p3);
                         gut++;
                         break;
                     }
                 }
             }
             while (false);
-            #endregion
-            */
+            #endregion          
             #region Secu
             float mindistp1e = Math.Min(CalcDistForAtoB(p1, e1), Math.Min(CalcDistForAtoB(p1, e2), CalcDistForAtoB(p1, e3)));
             float mindistp2e = Math.Min(CalcDistForAtoB(p2, e1), Math.Min(CalcDistForAtoB(p2, e2), CalcDistForAtoB(p2, e3)));
@@ -325,22 +341,42 @@ namespace KULLABERG
             while (false);
             #endregion
             #region Keep
-            if (ret[0] == new Vector2(0, 0))
+            do
             {
-                ret[0] = AI_Keep(p1);
-                Console.WriteLine("p1 - Keeper");
+                if (ret[0] == new Vector2(0, 0))
+                {
+                    ret[0] = AI_Keep(p1);
+                    gut++;
+                    break;
+                }
+                if (ret[1] == new Vector2(0, 0))
+                {
+                    ret[1] = AI_Keep(p2);
+                    gut++;
+                    break;
+                }
+                if (ret[2] == new Vector2(0, 0))
+                {
+                    ret[2] = AI_Keep(p3);
+                    gut++;
+                    break;
+                }
             }
-            if (ret[1] == new Vector2(0, 0))
-            {
-                ret[1] = AI_Keep(p2);
-                Console.WriteLine("p2 - Keeper");
-            }
-            if (ret[2] == new Vector2(0, 0))
-            {
-                ret[2] = AI_Keep(p3);
-                Console.WriteLine("p3 - Keeper");
-            }
+            while (false);
             #endregion
+
+            if (ret[0].X == 0 && ret[0].Y == 0)
+            {
+                ret[0] = AI_Atk(p1);
+            }
+            if (ret[1].X == 0 && ret[1].Y == 0)
+            {
+                ret[1] = AI_Atk(p2);
+            }
+            if (ret[2].X == 0 && ret[2].Y == 0)
+            {
+                ret[2] = AI_Atk(p3);
+            }
 
             for (int i = 0; i < 3; ++i)
             {
