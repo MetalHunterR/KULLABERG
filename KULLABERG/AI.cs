@@ -193,7 +193,6 @@ namespace KULLABERG
 
         private static Vector2[] AIBrain(float maxspeed)
         {
-            Console.WriteLine();
             Random rand = new Random();
             Vector2[] ret = new Vector2[3];
 
@@ -305,7 +304,6 @@ namespace KULLABERG
                     {
                         ret[0] = AI_Secu(p1);
                         gut++;
-                        Console.WriteLine("p1 - Security");
                         break;
                     }
                     else
@@ -319,7 +317,6 @@ namespace KULLABERG
                     {
                         ret[1] = AI_Secu(p2);
                         gut++;
-                        Console.WriteLine("p2 - Security");
                         break;
                     }
                     else
@@ -333,7 +330,6 @@ namespace KULLABERG
                     {
                         ret[2] = AI_Secu(p3);
                         gut++;
-                        Console.WriteLine("p3 - Security");
                         break;
                     }
                 }
