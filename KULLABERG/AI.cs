@@ -6,76 +6,36 @@ using System.Threading.Tasks;
 using System.Net;
 using System.IO;
 using System.Threading;
-
+using System.Numerics;
 
 namespace KULLABERG
 {
     class AI
     {
-        public class Vector
-        {
-            public double x, y;
-
-            public Vector(double X, double Y)
-            {
-                x = X;
-                y = Y;
-            }
-
-            public static Vector operator +(Vector a, Vector b)
-            {
-                return new Vector(a.x + b.x, a.y + b.y);
-            }
-
-            public static Vector operator +(Vector a, int b)
-            {
-                return new Vector(a.x + b, a.y + b);
-            }
-
-            public static Vector operator -(Vector a, Vector b)
-            {
-                return new Vector(a.x - b.x, a.y - b.y);
-            }
-            public static double operator %(Vector a, Vector b)
-            {
-                return Math.Sqrt(Math.Pow(a.x - b.x, 2.0) + Math.Pow(a.y - b.y, 2.0));
-            }
-
-            public static Vector operator /(Vector a, double b)
-            {
-                return new Vector(a.x / b, a.y / b);
-            }
-
-            public static Vector operator *(Vector a, double b)
-            {
-                return new Vector(a.x * b, a.y * b);
-            }
-        }
-
         public static Thread thread = new Thread(new ThreadStart(Threadd));
 
         public static int kapux = 1000;
         public static string[] getitpls = new string[15];
 
-        static Vector p1;
-        static Vector p2;
-        static Vector p3;
-        static Vector ball;
+        static Vector2 p1;
+        static Vector2 p2;
+        static Vector2 p3;
+        static Vector2 ball;
 
-        public static Vector CalcDirAToB(Vector a, Vector b)
+        public static Vector2 CalcDirAToB(Vector2 a, Vector2 b)
         {
-            Vector ret = a - b;
-            //double max = Math.Min(ret.x, ret.y);
-            return ret /* max*/;
+            Vector2 ret = a - b;
+            double max = Math.Max(ret.X, ret.Y);
+            return Vector2.Divide(a, b);
         }
 
-        public static Vector CalcDistanceToGoal()
+        public static Vector2 CalcDistanceToGoal()
         {
-            Vector GoalPoint = new Vector(kapux, 350);
+            Vector2 GoalPoint = new Vector2(kapux, 350);
 
             //double dist = p1 % GoalPoint;
             //Console.WriteLine(dist);
-            return new Vector(0, 0);
+            return new Vector2(0, 0);
         }
 
         public static int RandNeg()
@@ -85,53 +45,53 @@ namespace KULLABERG
             return 1;
         }
 
-        public static Vector[] AIi(Vector p1, Vector p2, Vector p3, Vector ball, double maxspeed)
+        public static Vector2[] AIi(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 ball, float maxspeed)
         {
             Random rand = new Random();
-            Vector[] ret = new Vector[3];
+            Vector2[] ret = new Vector2[3];
 
             for (int i = 0; i < 3; ++i)
             {
-                ret[i] = new Vector(0, 0);
+                ret[i] = new Vector2(0, 0);
             }
 
-            if (Math.Max(Math.Abs(kapux - p1.x), Math.Abs(kapux - p2.x)) == Math.Abs(kapux - p1.x))
+            if (Math.Max(Math.Abs(kapux - p1.X), Math.Abs(kapux - p2.X)) == Math.Abs(kapux - p1.X))
             {
-                Vector temp = new Vector(ball.x - 15, ball.y);
-                ret[0] = CalcDirAToB(p1, temp) * maxspeed;
+                Vector2 temp = new Vector2(ball.X - 15, ball.Y);
+                ret[0] = Vector2.Multiply(CalcDirAToB(p1, temp), maxspeed);//CalcDirAToB(p1, temp) * maxspeed;
 
-                temp = new Vector(Math.Abs(kapux - 1000), 350);
+                temp = new Vector2(Math.Abs(kapux - 1000), 350);
                 ret[1] = CalcDirAToB(p2, temp) * maxspeed;
             }
             else
             {
-                Vector temp = new Vector(ball.x - 15, ball.y);
+                Vector2 temp = new Vector2(ball.X - 15, ball.Y);
                 ret[1] = CalcDirAToB(p2, temp) * maxspeed;
 
-                temp = new Vector(Math.Abs(kapux - 1000), 350);
+                temp = new Vector2(Math.Abs(kapux - 1000), 350);
                 ret[0] = CalcDirAToB(p1, temp) * maxspeed;
 
             }
-            ret[2] = CalcDirAToB(p3, ball + (rand.Next(2, 10) * 10 * RandNeg())) * maxspeed;
+            ret[2] = CalcDirAToB(p3, Vector2.Multiply(ball, (rand.Next(2, 10) * 10 * RandNeg())) * maxspeed);
             CalcDistanceToGoal();
 
             return ret;
         }
 
-        public static Vector[] AI2(Vector p1, Vector p2, Vector p3, Vector ball, double maxspeed)
+        public static Vector2[] AI2(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 ball, double maxspeed)
         {
-            Vector[] ret = new Vector[3];
+            Vector2[] ret = new Vector2[3];
 
-            ret[0] = ball - p1;
-            ret[1] = ball - p2;
-            ret[2] = ball - p3;
+            ret[0] = p1-ball;
+            ret[1] = p2-ball;
+            ret[2] = p3-ball;
 
             return ret;
         }
 
-        public static Vector STV(string s1, string s2)
+        public static Vector2 STV(string s1, string s2)
         {
-            return new Vector(double.Parse(s1), double.Parse(s2));
+            return new Vector2(float.Parse(s1), float.Parse(s2));
         }
 
         public static string GetFinalMsg(string[] sa)
@@ -139,19 +99,17 @@ namespace KULLABERG
             //Console.WriteLine("curr: " + UDPConnection.gameid);
             string s = "";
 
-            /*
             p1 = STV(sa[3], sa[4]);
             p2 = STV(sa[5], sa[6]);
             p3 = STV(sa[7], sa[8]);
             ball = STV(sa[1], sa[2]);
-            */
 
             CalcDistanceToGoal();
-            Vector[] vs = AIi(STV(sa[3], sa[4]), STV(sa[5], sa[6]), STV(sa[7], sa[8]), STV(sa[1], sa[2]), 4);
+            Vector2[] vs = AI2(STV(sa[3], sa[4]), STV(sa[5], sa[6]), STV(sa[7], sa[8]), STV(sa[1], sa[2]), 4);
 
             for (int i = 0; i < 3; ++i)
             {
-                s += vs[i].x + "\n" + vs[i].y + "\n";
+                s += vs[i].X + "\n" + vs[i].Y + "\n";
             }
             return s;
         }
