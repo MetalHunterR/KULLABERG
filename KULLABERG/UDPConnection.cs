@@ -22,39 +22,22 @@ namespace KULLABERG
             {
                 Console.WriteLine("Waiting for broadcast");
 
-                if (Listener.Available != 0)
-                {
-                    Console.WriteLine("We received data");
-                }
                 AI.thread.Start();
-
                 while (!done)
                 {
-                    var watch = System.Diagnostics.Stopwatch.StartNew();
-
                     ReceivedByteAray = Listener.Receive(ref EndPoint);
-                    Console.WriteLine("Received a broadcast from {0}", EndPoint.ToString());
                     ReceivedData = Encoding.ASCII.GetString(ReceivedByteAray, 0, ReceivedByteAray.Length);
 
-                    string[] games = ReceivedData.Replace("????", "").Split('|');
-                    for (int i = 0; i < games.Length; i++)
+                    string[] games = ReceivedData.Replace("????", "¤").Split('¤');
+                    foreach (string g in games)
                     {
-                        if (games[i].Split('|')[0] == "69")
+                        string[] tmp = g.Split('|');
+                        if (tmp[0] == "69")
                         {
-                            string[] s = new string[15];
-                            for (int j = i; j < i + 15; j++)
-                            {
-                                s[j - i] = games[j];
-                                Console.WriteLine(games[j]);
-                            }
-                            AI.getitpls = s;
+                            AI.getitpls = tmp;
                             break;
                         }
                     }
-
-                    watch.Stop();
-                    var elapsedMs = watch.ElapsedMilliseconds;
-                    Console.WriteLine("Runtime: " + elapsedMs);
                 }
             }
             catch (Exception e)
