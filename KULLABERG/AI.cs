@@ -36,6 +36,10 @@ namespace KULLABERG
             {
                 return new Vector(a.x - b.x, a.y - b.y);
             }
+            public static double operator %(Vector a, Vector b)
+            {
+                return Math.Sqrt(Math.Pow(a.x - b.x, 2.0) + Math.Pow(a.y - b.y, 2.0));
+            }
 
             public static Vector operator /(Vector a, double b)
             {
@@ -53,11 +57,25 @@ namespace KULLABERG
         public static int kapux = 1000;
         public static string[] getitpls = new string[15];
 
+        static Vector p1;
+        static Vector p2;
+        static Vector p3;
+        static Vector ball;
+
         public static Vector CalcDirAToB(Vector a, Vector b)
         {
-            Vector ret = b - a;
-            double max = Math.Min(ret.x, ret.y);
-            return ret / max;
+            Vector ret = a - b;
+            //double max = Math.Min(ret.x, ret.y);
+            return ret /* max*/;
+        }
+
+        public static Vector CalcDistanceToGoal()
+        {
+            Vector GoalPoint = new Vector(kapux, 350);
+
+            //double dist = p1 % GoalPoint;
+            //Console.WriteLine(dist);
+            return new Vector(0, 0);
         }
 
         public static int RandNeg()
@@ -95,6 +113,18 @@ namespace KULLABERG
 
             }
             ret[2] = CalcDirAToB(p3, ball + (rand.Next(2, 10) * 10 * RandNeg())) * maxspeed;
+            CalcDistanceToGoal();
+
+            return ret;
+        }
+
+        public static Vector[] AI2(Vector p1, Vector p2, Vector p3, Vector ball, double maxspeed)
+        {
+            Vector[] ret = new Vector[3];
+
+            ret[0] = ball - p1;
+            ret[1] = ball - p2;
+            ret[2] = ball - p3;
 
             return ret;
         }
@@ -109,6 +139,14 @@ namespace KULLABERG
             //Console.WriteLine("curr: " + UDPConnection.gameid);
             string s = "";
 
+            /*
+            p1 = STV(sa[3], sa[4]);
+            p2 = STV(sa[5], sa[6]);
+            p3 = STV(sa[7], sa[8]);
+            ball = STV(sa[1], sa[2]);
+            */
+
+            CalcDistanceToGoal();
             Vector[] vs = AIi(STV(sa[3], sa[4]), STV(sa[5], sa[6]), STV(sa[7], sa[8]), STV(sa[1], sa[2]), 4);
 
             for (int i = 0; i < 3; ++i)
